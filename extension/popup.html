@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Assignment Solver</title>
+  <style>
+    body { font: 13px/1.4 system-ui, sans-serif; width: 340px; padding: 12px; }
+    h1 { font-size: 14px; margin: 0 0 8px; }
+    label { display: block; margin-bottom: 4px; font-weight: 600; }
+    input, select { width: 100%; box-sizing: border-box; padding: 6px; margin-bottom: 10px; }
+    button { width: 100%; padding: 7px; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; }
+    #status { font-size: 12px; margin-top: 6px; min-height: 14px; }
+    hr { border: none; border-top: 1px solid #e2e2e2; margin: 14px 0; }
+    #solve-btn { background: #0056d2; color: #fff; border: none; border-radius: 6px; font-weight: 600; }
+    #result { display: none; margin-top: 10px; max-height: 320px; overflow-y: auto; white-space: pre-wrap;
+      background: #f7f7f9; border: 1px solid #e2e2e2; border-radius: 6px; padding: 8px; }
+    #result.error { color: #c0392b; background: #fdecea; border-color: #f5c6c3; }
+  </style>
+</head>
+<body>
+  <h1>Solve with AI</h1>
+  <button id="solve-btn">Solve this assignment</button>
+  <div id="result"></div>
+
+  <hr />
+
+  <h1>Gemini API settings</h1>
+  <label for="apiKey">API key</label>
+  <input id="apiKey" type="password" placeholder="AIza..." autocomplete="off" />
+  <label for="model">Model</label>
+  <select id="model">
+    <option value="gemini-3.8-flash">gemini-3.8-flash</option>
+    <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite</option>
+    <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+    <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+    <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+    <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+  </select>
+  <button id="save">Save</button>
+  <div id="status"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
