@@ -372,12 +372,19 @@
 
   <!-- Settings Card -->
   <section class="card">
-    <div class="card-title">Gemini API Settings</div>
+    <div class="card-title">AI Provider Settings</div>
     <div class="field-group">
-      <label for="apiKey">API Key</label>
-      <input id="apiKey" type="password" placeholder="Enter your Gemini API key" autocomplete="off" spellcheck="false" />
+      <label for="provider">Provider</label>
+      <select id="provider">
+        <option value="gemini">Google Gemini</option>
+        <option value="openrouter">OpenRouter</option>
+      </select>
     </div>
     <div class="field-group">
+      <label for="apiKey" id="apiKeyLabel">API Key</label>
+      <input id="apiKey" type="password" placeholder="Enter your Gemini API key" autocomplete="off" spellcheck="false" />
+    </div>
+    <div class="field-group" id="geminiModelGroup">
       <label for="model">Model</label>
       <select id="model">
         <option value="gemini-3.8-flash">gemini-3.8-flash (Recommended)</option>
@@ -385,6 +392,18 @@
         <option value="gemini-3.7-flash">gemini-3.7-flash</option>
         <option value="gemini-3.6-flash">gemini-3.6-flash</option>
         <option value="gemini-3.5-flash">gemini-3.5-flash</option>
+      </select>
+    </div>
+    <div class="field-group" id="openrouterModelGroup" style="display: none;">
+      <label for="openrouterModel">Model</label>
+      <select id="openrouterModel">
+        <option value="nvidia/nemotron-3-ultra-550b-a55b:free">NVIDIA: Nemotron 3 Ultra (free)</option>
+        <option value="nvidia/nemotron-nano-9b-v2:free">NVIDIA: Nemotron Nano 9B v2 (free)</option>
+        <option value="qwen/qwen3.8-27b:free">Qwen: Qwen3.8 27B (free)</option>
+        <option value="z-ai/glm-5.2:free">Z.ai: GLM 5.2 (free)</option>
+        <option value="openai/gpt-4o-mini">OpenAI: GPT-4o mini</option>
+        <option value="anthropic/claude-3.5-sonnet">Anthropic: Claude 3.5 Sonnet</option>
+        <option value="meta-llama/llama-3.3-70b-instruct">Meta: Llama 3.3 70B Instruct</option>
       </select>
     </div>
     <button id="save" class="btn-secondary">Save Configuration</button>

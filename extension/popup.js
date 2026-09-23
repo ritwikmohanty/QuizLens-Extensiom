@@ -1,17 +1,44 @@
 const apiKeyInput = document.getElementById('apiKey');
+const apiKeyLabel = document.getElementById('apiKeyLabel');
+const providerSelect = document.getElementById('provider');
 const modelSelect = document.getElementById('model');
+const openrouterModelSelect = document.getElementById('openrouterModel');
+const geminiModelGroup = document.getElementById('geminiModelGroup');
+const openrouterModelGroup = document.getElementById('openrouterModelGroup');
 const statusEl = document.getElementById('status');
 const solveBtn = document.getElementById('solve-btn');
 const resultEl = document.getElementById('result');
 const gradedOnlyInput = document.getElementById('gradedOnly');
 
+function updateProviderUi(provider) {
+  const isOpenRouter = provider === 'openrouter';
+  geminiModelGroup.style.display = isOpenRouter ? 'none' : '';
+  openrouterModelGroup.style.display = isOpenRouter ? '' : 'none';
+  apiKeyLabel.textContent = isOpenRouter ? 'OpenRouter API Key' : 'Gemini API Key';
+  apiKeyInput.placeholder = isOpenRouter ? 'Enter your OpenRouter API key' : 'Enter your Gemini API key';
+}
+
 chrome.storage.sync.get({ gradedOnlyEnabled: true }, ({ gradedOnlyEnabled }) => {
   gradedOnlyInput.checked = gradedOnlyEnabled !== false;
 });
 
-chrome.storage.sync.get(['geminiApiKey', 'geminiModel'], ({ geminiApiKey, geminiModel }) => {
-  if (geminiApiKey) apiKeyInput.value = geminiApiKey;
-  if (geminiModel) modelSelect.value = geminiModel;
+chrome.storage.sync.get(
+  ['aiProvider', 'geminiApiKey', 'geminiModel', 'openrouterApiKey', 'openrouterModel'],
+  ({ aiProvider, geminiApiKey, geminiModel, openrouterApiKey, openrouterModel }) => {
+    const provider = aiProvider || 'gemini';
+    providerSelect.value = provider;
+    if (geminiModel) modelSelect.value = geminiModel;
+    if (openrouterModel) openrouterModelSelect.value = openrouterModel;
+    apiKeyInput.value = (provider === 'openrouter' ? openrouterApiKey : geminiApiKey) || '';
+    updateProviderUi(provider);
+  }
+);
+
+providerSelect.addEventListener('change', async () => {
+  const provider = providerSelect.value;
+  updateProviderUi(provider);
+  const { geminiApiKey, openrouterApiKey } = await chrome.storage.sync.get(['geminiApiKey', 'openrouterApiKey']);
+  apiKeyInput.value = (provider === 'openrouter' ? openrouterApiKey : geminiApiKey) || '';
 });
 
 gradedOnlyInput.addEventListener('change', async () => {
@@ -27,9 +54,15 @@ gradedOnlyInput.addEventListener('change', async () => {
 });
 
 document.getElementById('save').addEventListener('click', () => {
-  const geminiApiKey = apiKeyInput.value.trim();
-  const geminiModel = modelSelect.value;
-  chrome.storage.sync.set({ geminiApiKey, geminiModel }, () => {
+  const aiProvider = providerSelect.value;
+  const apiKey = apiKeyInput.value.trim();
+  const update = { aiProvider, geminiModel: modelSelect.value, openrouterModel: openrouterModelSelect.value };
+  if (aiProvider === 'openrouter') {
+    update.openrouterApiKey = apiKey;
+  } else {
+    update.geminiApiKey = apiKey;
+  }
+  chrome.storage.sync.set(update, () => {
     statusEl.textContent = 'Saved.';
     setTimeout(() => { statusEl.textContent = ''; }, 1500);
   });
@@ -109,16 +142,20 @@ function extractQuestionsFromPage() {
   }
   const endEl = findEndElement();
 
-  const inputs = Array.from(document.querySelectorAll('input[type="radio"], input[type="checkbox"]')).filter((input) =>
+  const choiceInputs = Array.from(document.querySelectorAll('input[type="radio"], input[type="checkbox"]')).filter((input) =>
     isInRange(input, startEl, endEl)
   );
 
-  if (!inputs.length) {
-    return { ok: false, error: 'No radio/checkbox questions were found between the heading and the Honor Code section.' };
+  const textInputs = Array.from(
+    document.querySelectorAll('input[type="text"], input[type="number"], input:not([type]), textarea')
+  ).filter((input) => isInRange(input, startEl, endEl));
+
+  if (!choiceInputs.length && !textInputs.length) {
+    return { ok: false, error: 'No radio/checkbox/text questions were found between the heading and the Honor Code section.' };
   }
 
   const groups = new Map(); // groupKey -> { container, inputs: [] }
-  inputs.forEach((input, idx) => {
+  choiceInputs.forEach((input, idx) => {
     const container = input.closest('[role="radiogroup"]') || input.closest('[role="group"]') || input.closest('fieldset');
     const key = container || (input.type === 'radio' && input.name ? `name:${input.name}` : `solo:${idx}`);
     if (!groups.has(key)) groups.set(key, { container: container || null, inputs: [] });
@@ -139,6 +176,14 @@ function extractQuestionsFromPage() {
     questions.push({ id: qid, type, text: questionText(container, qIndex), options });
   }
 
+  textInputs.forEach((input) => {
+    qIndex += 1;
+    const qid = `q${qIndex}`;
+    input.setAttribute('data-ai-oid', qid);
+    const container = input.closest('[role="group"]') || input.closest('fieldset') || input.parentElement;
+    questions.push({ id: qid, type: 'text', text: questionText(container, qIndex), options: [] });
+  });
+
   return { ok: true, questions };
 }
 
@@ -147,15 +192,30 @@ function applyAnswersToPage(answers) {
   let applied = 0;
   let missing = 0;
   (answers || []).forEach((ans) => {
-    (ans.optionIds || []).forEach((oid) => {
-      const input = document.querySelector(`[data-ai-oid="${CSS.escape(oid)}"]`);
+    if (ans.optionIds && ans.optionIds.length) {
+      ans.optionIds.forEach((oid) => {
+        const input = document.querySelector(`[data-ai-oid="${CSS.escape(oid)}"]`);
+        if (!input) {
+          missing += 1;
+          return;
+        }
+        if (!input.checked) input.click();
+        applied += 1;
+      });
+      return;
+    }
+    if (typeof ans.value === 'string') {
+      const input = document.querySelector(`[data-ai-oid="${CSS.escape(ans.questionId)}"]`);
       if (!input) {
         missing += 1;
         return;
       }
-      if (!input.checked) input.click();
+      const setter = Object.getOwnPropertyDescriptor(input.__proto__, 'value')?.set;
+      if (setter) setter.call(input, ans.value); else input.value = ans.value;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
       applied += 1;
-    });
+    }
   });
   return { applied, missing };
 }
@@ -170,6 +230,9 @@ function renderAnswers(questions, answers, applyStats) {
   const byId = new Map(questions.map((q) => [q.id, q]));
   const lines = answers.map((ans) => {
     const q = byId.get(ans.questionId);
+    if (q?.type === 'text' || typeof ans.value === 'string') {
+      return `${q ? q.text : ans.questionId}\n  -> ${ans.value ?? '(no value provided)'}`;
+    }
     const optionTexts = (ans.optionIds || [])
       .map((oid) => q?.options.find((o) => o.id === oid)?.text || oid)
       .join(', ');
@@ -196,7 +259,9 @@ solveBtn.addEventListener('click', async () => {
       throw new Error(result?.error || 'Could not read the assignment content.');
     }
 
-    showResult('Asking Gemini...', false);
+    const { aiProvider, geminiModel, openrouterModel } = await chrome.storage.sync.get(['aiProvider', 'geminiModel', 'openrouterModel']);
+    const activeModel = aiProvider === 'openrouter' ? (openrouterModel || openrouterModelSelect.value) : (geminiModel || modelSelect.value);
+    showResult(`Asking ${activeModel}...`, false);
 
     chrome.runtime.sendMessage({ type: 'SOLVE_ASSIGNMENT', questions: result.questions }, async (response) => {
       if (!response) {
