@@ -1,44 +1,396 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Assignment Solver</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuizLens AI</title>
   <style>
-    body { font: 13px/1.4 system-ui, sans-serif; width: 340px; padding: 12px; }
-    h1 { font-size: 14px; margin: 0 0 8px; }
-    label { display: block; margin-bottom: 4px; font-weight: 600; }
-    input, select { width: 100%; box-sizing: border-box; padding: 6px; margin-bottom: 10px; }
-    button { width: 100%; padding: 7px; cursor: pointer; }
-    button:disabled { opacity: .6; cursor: wait; }
-    #status { font-size: 12px; margin-top: 6px; min-height: 14px; }
-    hr { border: none; border-top: 1px solid #e2e2e2; margin: 14px 0; }
-    #solve-btn { background: #0056d2; color: #fff; border: none; border-radius: 6px; font-weight: 600; }
-    #result { display: none; margin-top: 10px; max-height: 320px; overflow-y: auto; white-space: pre-wrap;
-      background: #f7f7f9; border: 1px solid #e2e2e2; border-radius: 6px; padding: 8px; }
-    #result.error { color: #c0392b; background: #fdecea; border-color: #f5c6c3; }
+    :root {
+      --bg: #ffffff;
+      --surface: #f8fafc;
+      --surface-hover: #f1f5f9;
+      --border: #e2e8f0;
+      --border-focus: #0f172a;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      --primary: #0f172a;
+      --primary-hover: #1e293b;
+      --primary-text: #ffffff;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --success: #16a34a;
+      --success-bg: #f0fdf4;
+      --success-border: #bbf7d0;
+      --error: #dc2626;
+      --error-bg: #fef2f2;
+      --error-border: #fecaca;
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      width: 360px;
+      background: var(--bg);
+      color: var(--text-main);
+      padding: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-sm);
+      background: var(--primary);
+      color: var(--primary-text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text-main);
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 9999px;
+    }
+
+    /* Section Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    /* Toggle Switch Row */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-label {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .toggle-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .toggle-description {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #cbd5e1;
+      transition: background-color 0.2s ease;
+      border-radius: 20px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #ffffff;
+      transition: transform 0.2s ease;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    .switch input:checked + .slider {
+      background-color: var(--accent);
+    }
+
+    .switch input:focus-visible + .slider {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(16px);
+    }
+
+    /* Primary Action */
+    .primary-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #ffffff;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.05s ease;
+    }
+
+    .primary-btn:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    .primary-btn:active:not(:disabled) {
+      transform: scale(0.99);
+    }
+
+    .primary-btn:disabled {
+      opacity: 0.65;
+      cursor: wait;
+    }
+
+    /* Result Box */
+    #result {
+      display: none;
+      margin-top: 10px;
+      max-height: 240px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-main);
+    }
+
+    #result.error {
+      color: var(--error);
+      background: var(--error-bg);
+      border-color: var(--error-border);
+    }
+
+    /* Collapsible / Form settings */
+    .field-group {
+      margin-bottom: 10px;
+    }
+
+    .field-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    select {
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 7px 10px;
+      font-size: 12px;
+      color: var(--text-main);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    select {
+      padding-right: 28px;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%2364748B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--border-focus);
+    }
+
+    .btn-secondary {
+      width: 100%;
+      background: #ffffff;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-hover);
+      border-color: #cbd5e1;
+    }
+
+    #status {
+      font-size: 11px;
+      font-weight: 500;
+      margin-top: 6px;
+      min-height: 16px;
+      color: var(--success);
+      text-align: center;
+    }
+
+    /* Scrollbar */
+    #result::-webkit-scrollbar {
+      width: 5px;
+    }
+    #result::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    #result::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    #result::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
   </style>
 </head>
 <body>
-  <h1>Solve with AI</h1>
-  <button id="solve-btn">Solve this assignment</button>
-  <div id="result"></div>
+  <header class="header">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+      <span class="brand-title">QuizLens</span>
+    </div>
+  </header>
 
-  <hr />
+  <!-- Filter Card -->
+  <section class="card">
+    <label class="toggle-row" for="gradedOnly">
+      <div class="toggle-label">
+        <span class="toggle-title">Graded only</span>
+        <span class="toggle-description">Only display graded questions</span>
+      </div>
+      <div class="switch">
+        <input id="gradedOnly" type="checkbox" />
+        <span class="slider"></span>
+      </div>
+    </label>
+  </section>
 
-  <h1>Gemini API settings</h1>
-  <label for="apiKey">API key</label>
-  <input id="apiKey" type="password" placeholder="AIza..." autocomplete="off" />
-  <label for="model">Model</label>
-  <select id="model">
-    <option value="gemini-3.8-flash">gemini-3.8-flash</option>
-    <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite</option>
-    <option value="gemini-2.5-flash">gemini-2.5-flash</option>
-    <option value="gemini-2.0-flash">gemini-2.0-flash</option>
-    <option value="gemini-1.5-flash">gemini-1.5-flash</option>
-    <option value="gemini-1.5-pro">gemini-1.5-pro</option>
-  </select>
-  <button id="save">Save</button>
-  <div id="status"></div>
+  <!-- Solve Action Card -->
+  <section class="card">
+    <div class="card-title">AI Assistant</div>
+    <button id="solve-btn" class="primary-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+      </svg>
+      Solve this assignment
+    </button>
+    <div id="result"></div>
+  </section>
+
+  <!-- Settings Card -->
+  <section class="card">
+    <div class="card-title">Gemini API Settings</div>
+    <div class="field-group">
+      <label for="apiKey">API Key</label>
+      <input id="apiKey" type="password" placeholder="Enter your Gemini API key" autocomplete="off" spellcheck="false" />
+    </div>
+    <div class="field-group">
+      <label for="model">Model</label>
+      <select id="model">
+        <option value="gemini-3.8-flash">gemini-3.8-flash (Recommended)</option>
+        <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (Fastest)</option>
+        <option value="gemini-3.7-flash">gemini-3.7-flash</option>
+        <option value="gemini-3.6-flash">gemini-3.6-flash</option>
+        <option value="gemini-3.5-flash">gemini-3.5-flash</option>
+      </select>
+    </div>
+    <button id="save" class="btn-secondary">Save Configuration</button>
+    <div id="status"></div>
+  </section>
+
   <script src="popup.js"></script>
 </body>
 </html>

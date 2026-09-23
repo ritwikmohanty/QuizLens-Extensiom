@@ -3,10 +3,27 @@ const modelSelect = document.getElementById('model');
 const statusEl = document.getElementById('status');
 const solveBtn = document.getElementById('solve-btn');
 const resultEl = document.getElementById('result');
+const gradedOnlyInput = document.getElementById('gradedOnly');
+
+chrome.storage.sync.get({ gradedOnlyEnabled: true }, ({ gradedOnlyEnabled }) => {
+  gradedOnlyInput.checked = gradedOnlyEnabled !== false;
+});
 
 chrome.storage.sync.get(['geminiApiKey', 'geminiModel'], ({ geminiApiKey, geminiModel }) => {
   if (geminiApiKey) apiKeyInput.value = geminiApiKey;
   if (geminiModel) modelSelect.value = geminiModel;
+});
+
+gradedOnlyInput.addEventListener('change', async () => {
+  const gradedOnlyEnabled = gradedOnlyInput.checked;
+  chrome.storage.sync.set({ gradedOnlyEnabled });
+
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id) return;
+
+  chrome.tabs.sendMessage(tab.id, { type: 'SET_GRADED_ONLY_FILTER', enabled: gradedOnlyEnabled }, () => {
+    void chrome.runtime.lastError;
+  });
 });
 
 document.getElementById('save').addEventListener('click', () => {
