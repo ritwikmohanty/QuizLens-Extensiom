@@ -25,8 +25,8 @@ function buildPrompt(questions) {
   return [
     'You are helping a student answer a graded assignment made of multiple-choice/checkbox questions and free-text/number input questions.',
     'Below is a JSON array of questions extracted from the page. Each question has an id, a type',
-    '("radio" = exactly one correct option, "checkbox" = one or more correct options, "text" = free-text or numeric answer typed into an input box), its text, and (for radio/checkbox) a list of options (each with an id and text).',
-    'For "radio"/"checkbox" questions, return the correct option id(s) in "optionIds" so the extension can click the matching radio/checkbox on the page. Only use option ids that appear in the input. For "radio" questions return exactly one optionId.',
+    '("radio" = exactly one correct option, "checkbox" = one or more correct options, "dropdown" = a select box with exactly one correct option, "text" = free-text or numeric answer typed into an input box), its text, and (for radio/checkbox/dropdown) a list of options (each with an id and text).',
+    'For "radio"/"checkbox"/"dropdown" questions, return the correct option id(s) in "optionIds" so the extension can click/select the matching choice on the page. Only use option ids that appear in the input. For "radio" and "dropdown" questions return exactly one optionId.',
     'For "text" questions, return the answer as a string in the "value" field (do not include "optionIds"). Keep numeric answers as plain numbers/text with no extra words unless the question asks for an explanation.',
     'Respond with ONLY a JSON object matching this shape: {"answers":[{"questionId":"...","optionIds":["..."],"value":"...","explanation":"..."}]}. Do not include markdown fences or extra commentary.',
     '',

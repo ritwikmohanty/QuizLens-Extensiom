@@ -19,6 +19,8 @@
       --primary-text: #ffffff;
       --accent: #2563eb;
       --accent-hover: #1d4ed8;
+      --accent-subtle: #eff6ff;
+      --accent-border: #bfdbfe;
       --success: #16a34a;
       --success-bg: #f0fdf4;
       --success-border: #bbf7d0;
@@ -39,7 +41,7 @@
     }
 
     body {
-      width: 360px;
+      width: 370px;
       background: var(--bg);
       color: var(--text-main);
       padding: 16px;
@@ -52,8 +54,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
       border-bottom: 1px solid var(--border);
     }
 
@@ -91,25 +93,15 @@
       border-radius: 9999px;
     }
 
-    /* Section Card */
-    .card {
+    /* Filter Card */
+    .filter-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
-      padding: 12px;
+      padding: 9px 12px;
       margin-bottom: 12px;
     }
 
-    .card-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-    }
-
-    /* Toggle Switch Row */
     .toggle-row {
       display: flex;
       align-items: center;
@@ -121,25 +113,25 @@
     .toggle-label {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 1px;
     }
 
     .toggle-title {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--text-main);
     }
 
     .toggle-description {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
     }
 
     .switch {
       position: relative;
       display: inline-block;
-      width: 36px;
-      height: 20px;
+      width: 32px;
+      height: 18px;
       flex-shrink: 0;
     }
 
@@ -165,30 +157,96 @@
     .slider:before {
       position: absolute;
       content: "";
-      height: 14px;
-      width: 14px;
+      height: 12px;
+      width: 12px;
       left: 3px;
       bottom: 3px;
       background-color: #ffffff;
       transition: transform 0.2s ease;
       border-radius: 50%;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
     }
 
     .switch input:checked + .slider {
       background-color: var(--accent);
     }
 
-    .switch input:focus-visible + .slider {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-
     .switch input:checked + .slider:before {
-      transform: translateX(16px);
+      transform: translateX(14px);
     }
 
-    /* Primary Action */
+    /* Navigation Mode Tabs */
+    .mode-nav {
+      display: flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 3px;
+      margin-bottom: 12px;
+      gap: 2px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      background: #ffffff;
+      color: var(--text-main);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Section Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .mode-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
+
+    /* Buttons */
     .primary-btn {
       width: 100%;
       display: flex;
@@ -203,7 +261,7 @@
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.05s ease;
+      transition: background-color 0.15s ease, transform 0.05s ease;
     }
 
     .primary-btn:hover:not(:disabled) {
@@ -219,29 +277,106 @@
       cursor: wait;
     }
 
-    /* Result Box */
-    #result {
-      display: none;
-      margin-top: 10px;
-      max-height: 240px;
-      overflow-y: auto;
-      white-space: pre-wrap;
+    .btn-secondary {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: #ffffff;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--surface-hover);
+      border-color: #cbd5e1;
+    }
+
+    .btn-secondary:disabled {
+      opacity: 0.65;
+      cursor: wait;
+    }
+
+    /* Workflow Steps (Manual Mode) */
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .step-item {
       background: #ffffff;
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 10px 12px;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .step-number {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-subtle);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
+      font-size: 10.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-title {
       font-size: 12px;
-      line-height: 1.5;
+      font-weight: 600;
       color: var(--text-main);
     }
 
-    #result.error {
-      color: var(--error);
-      background: var(--error-bg);
-      border-color: var(--error-border);
+    .step-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      line-height: 1.4;
     }
 
-    /* Collapsible / Form settings */
+    .ai-links {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .ai-link-pill {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 3px 7px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .ai-link-pill:hover {
+      color: var(--text-main);
+      border-color: #cbd5e1;
+      background: #f1f5f9;
+    }
+
+    /* Form Fields */
     .field-group {
       margin-bottom: 10px;
     }
@@ -252,15 +387,16 @@
 
     label {
       display: block;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
       color: var(--text-main);
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
 
     input[type="text"],
     input[type="password"],
-    select {
+    select,
+    textarea {
       width: 100%;
       background: #ffffff;
       border: 1px solid var(--border);
@@ -274,6 +410,13 @@
       appearance: none;
     }
 
+    textarea {
+      resize: vertical;
+      min-height: 56px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+    }
+
     select {
       padding-right: 28px;
       cursor: pointer;
@@ -283,27 +426,31 @@
     }
 
     input:focus,
-    select:focus {
+    select:focus,
+    textarea:focus {
       border-color: var(--border-focus);
     }
 
-    .btn-secondary {
-      width: 100%;
-      background: #ffffff;
-      color: var(--text-main);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 7px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
+    /* Result Box */
+    #result {
+      display: none;
       margin-top: 10px;
+      max-height: 220px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      font-size: 11.5px;
+      line-height: 1.5;
+      color: var(--text-main);
     }
 
-    .btn-secondary:hover {
-      background: var(--surface-hover);
-      border-color: #cbd5e1;
+    #result.error {
+      color: var(--error);
+      background: var(--error-bg);
+      border-color: var(--error-border);
     }
 
     #status {
@@ -315,18 +462,22 @@
       text-align: center;
     }
 
-    /* Scrollbar */
-    #result::-webkit-scrollbar {
+    /* Scrollbars */
+    #result::-webkit-scrollbar,
+    textarea::-webkit-scrollbar {
       width: 5px;
     }
-    #result::-webkit-scrollbar-track {
+    #result::-webkit-scrollbar-track,
+    textarea::-webkit-scrollbar-track {
       background: transparent;
     }
-    #result::-webkit-scrollbar-thumb {
+    #result::-webkit-scrollbar-thumb,
+    textarea::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 4px;
     }
-    #result::-webkit-scrollbar-thumb:hover {
+    #result::-webkit-scrollbar-thumb:hover,
+    textarea::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
   </style>
@@ -345,70 +496,141 @@
   </header>
 
   <!-- Filter Card -->
-  <section class="card">
+  <div class="filter-card">
     <label class="toggle-row" for="gradedOnly">
       <div class="toggle-label">
         <span class="toggle-title">Graded only</span>
-        <span class="toggle-description">Only display graded questions</span>
+        <span class="toggle-description">Hide practice items, focus on graded quiz</span>
       </div>
       <div class="switch">
         <input id="gradedOnly" type="checkbox" />
         <span class="slider"></span>
       </div>
     </label>
-  </section>
+  </div>
 
-  <!-- Solve Action Card -->
-  <section class="card">
-    <div class="card-title">AI Assistant</div>
-    <button id="solve-btn" class="primary-btn">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Mode Selector Tabs -->
+  <div class="mode-nav" role="tablist">
+    <button id="tab-api-btn" class="tab-btn active" role="tab" aria-selected="true" aria-controls="pane-api">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
       </svg>
-      Solve this assignment
+      Direct API
     </button>
-    <div id="result"></div>
-  </section>
+    <button id="tab-manual-btn" class="tab-btn" role="tab" aria-selected="false" aria-controls="pane-manual">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+      Copy & Paste
+    </button>
+  </div>
 
-  <!-- Settings Card -->
-  <section class="card">
-    <div class="card-title">AI Provider Settings</div>
-    <div class="field-group">
-      <label for="provider">Provider</label>
-      <select id="provider">
-        <option value="gemini">Google Gemini</option>
-        <option value="openrouter">OpenRouter</option>
-      </select>
-    </div>
-    <div class="field-group">
-      <label for="apiKey" id="apiKeyLabel">API Key</label>
-      <input id="apiKey" type="password" placeholder="Enter your Gemini API key" autocomplete="off" spellcheck="false" />
-    </div>
-    <div class="field-group" id="geminiModelGroup">
-      <label for="model">Model</label>
-      <select id="model">
-        <option value="gemini-3.8-flash">gemini-3.8-flash (Recommended)</option>
-        <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (Fastest)</option>
-        <option value="gemini-3.7-flash">gemini-3.7-flash</option>
-        <option value="gemini-3.6-flash">gemini-3.6-flash</option>
-        <option value="gemini-3.5-flash">gemini-3.5-flash</option>
-      </select>
-    </div>
-    <div class="field-group" id="openrouterModelGroup" style="display: none;">
-      <label for="openrouterModel">Model</label>
-      <select id="openrouterModel">
-        <option value="nvidia/nemotron-3-ultra-550b-a55b:free">NVIDIA: Nemotron 3 Ultra (free)</option>
-        <option value="nvidia/nemotron-nano-9b-v2:free">NVIDIA: Nemotron Nano 9B v2 (free)</option>
-        <option value="qwen/qwen3.8-27b:free">Qwen: Qwen3.8 27B (free)</option>
-        <option value="z-ai/glm-5.2:free">Z.ai: GLM 5.2 (free)</option>
-        <option value="openai/gpt-4o-mini">OpenAI: GPT-4o mini</option>
-        <option value="anthropic/claude-3.5-sonnet">Anthropic: Claude 3.5 Sonnet</option>
-        <option value="meta-llama/llama-3.3-70b-instruct">Meta: Llama 3.3 70B Instruct</option>
-      </select>
-    </div>
-    <button id="save" class="btn-secondary">Save Configuration</button>
-    <div id="status"></div>
-  </section>
+  <!-- Pane 1: Direct API Mode -->
+  <div id="pane-api" class="tab-pane active" role="tabpanel">
+    <section class="card">
+      <div class="card-title">1-Click Auto Solve</div>
+      <p class="mode-desc">Reads questions directly from the page and applies answers automatically via your API key.</p>
+      <button id="solve-btn" class="primary-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        Solve this assignment
+      </button>
+    </section>
+
+    <!-- API Configuration Card -->
+    <section class="card">
+      <div class="card-title">API Configuration</div>
+      <div class="field-group">
+        <label for="provider">Provider</label>
+        <select id="provider">
+          <option value="gemini">Google Gemini</option>
+          <option value="openrouter">OpenRouter</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label for="apiKey" id="apiKeyLabel">Gemini API Key</label>
+        <input id="apiKey" type="password" placeholder="Enter your Gemini API key" autocomplete="off" spellcheck="false" />
+      </div>
+      <div class="field-group" id="geminiModelGroup">
+        <label for="model">Model</label>
+        <select id="model">
+          <option value="gemini-3.8-flash">gemini-3.8-flash (Recommended)</option>
+          <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (Fastest)</option>
+          <option value="gemini-3.7-flash">gemini-3.7-flash</option>
+          <option value="gemini-3.6-flash">gemini-3.6-flash</option>
+          <option value="gemini-3.5-flash">gemini-3.5-flash</option>
+        </select>
+      </div>
+      <div class="field-group" id="openrouterModelGroup" style="display: none;">
+        <label for="openrouterModel">Model</label>
+        <select id="openrouterModel">
+          <option value="nvidia/nemotron-3-ultra-550b-a55b:free">NVIDIA: Nemotron 3 Ultra (free)</option>
+          <option value="nvidia/nemotron-nano-9b-v2:free">NVIDIA: Nemotron Nano 9B v2 (free)</option>
+          <option value="qwen/qwen3.8-27b:free">Qwen: Qwen3.8 27B (free)</option>
+          <option value="z-ai/glm-5.2:free">Z.ai: GLM 5.2 (free)</option>
+          <option value="openai/gpt-4o-mini">OpenAI: GPT-4o mini</option>
+          <option value="anthropic/claude-3.5-sonnet">Anthropic: Claude 3.5 Sonnet</option>
+          <option value="meta-llama/llama-3.3-70b-instruct">Meta: Llama 3.3 70B Instruct</option>
+        </select>
+      </div>
+      <button id="save" class="btn-secondary" style="margin-top: 10px;">Save Configuration</button>
+      <div id="status"></div>
+    </section>
+  </div>
+
+  <!-- Pane 2: Manual Copy & Paste Mode -->
+  <div id="pane-manual" class="tab-pane" role="tabpanel">
+    <section class="card">
+      <div class="card-title">Bring Your Own AI (No API Key)</div>
+      <p class="mode-desc">Use ChatGPT, Claude, DeepSeek, or Gemini in your browser without entering any API key.</p>
+      
+      <div class="step-list">
+        <!-- Step 1 -->
+        <div class="step-item">
+          <div class="step-header">
+            <span class="step-number">1</span>
+            <span class="step-title">Copy Questions</span>
+          </div>
+          <p class="step-desc">Extracts questions & options into a formatted prompt ready for any AI model.</p>
+          <button id="copy-questions-btn" class="btn-secondary">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Copy Questions to Clipboard
+          </button>
+          <div class="ai-links">
+            <a href="https://chatgpt.com" target="_blank" rel="noopener" class="ai-link-pill">ChatGPT ↗</a>
+            <a href="https://claude.ai" target="_blank" rel="noopener" class="ai-link-pill">Claude ↗</a>
+            <a href="https://gemini.google.com" target="_blank" rel="noopener" class="ai-link-pill">Gemini ↗</a>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-item">
+          <div class="step-header">
+            <span class="step-number">2</span>
+            <span class="step-title">Paste & Apply Answers</span>
+          </div>
+          <p class="step-desc">Paste the AI's reply below. QuizLens will auto-detect the JSON and click the answers.</p>
+          <div class="field-group">
+            <textarea id="pastedAnswer" placeholder='Paste AI response here (e.g. {"answers":[...]})'></textarea>
+          </div>
+          <button id="apply-pasted-btn" class="primary-btn" style="padding: 8px 12px; font-size: 12px; margin-top: 6px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Apply Answers to Page
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Shared Result Output Box -->
+  <div id="result"></div>
 
   <script src="popup.js"></script>
 </body>
